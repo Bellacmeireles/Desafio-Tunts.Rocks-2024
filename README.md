@@ -18,9 +18,9 @@ O aplicativo realiza as seguintes tarefas:
 
 ### **Pré-requisitos**
 - JDK (Kit de Desenvolvimento Java) - Foi utilizado versão 11
-  Maven ou Gradle (para gerenciamento de dependências) - Foi utilizado o Gradle
-  Projeto na Google Cloud Platform com a API do Sheets habilitada
-  Credenciais OAuth 2.0 para acessar a API do Sheets (armazenadas em credentials.json)
+- Maven ou Gradle (para gerenciamento de dependências) - Foi utilizado o Gradle
+- Projeto na Google Cloud Platform com a API do Sheets habilitada
+- Credenciais OAuth 2.0 para acessar a API do Sheets (armazenadas em credentials.json)
 
 ### **Instruções de Configuração**
 1. Clone este repositório.

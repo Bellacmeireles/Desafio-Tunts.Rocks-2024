@@ -13,6 +13,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,6 @@ public class SheetsQuickstart {
     private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-        //"tokens";
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -64,17 +64,16 @@ public class SheetsQuickstart {
 
     /**
      * Prints the names and majors of students in a sample spreadsheet:
-     * https://docs.google.com/spreadsheets/d/15hDrYerqMb5g4dQbVrV8nFY11FOdBgr_BRjqBsrhoiQ/edit#gid=0
+     * <a href="https://docs.google.com/spreadsheets/d/15hDrYerqMb5g4dQbVrV8nFY11FOdBgr_BRjqBsrhoiQ/edit#gid=0">...</a>
      */
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        final String spreadsheetId = "15hDrYerqMb5g4dQbVrV8nFY11FOdBgr_BRjqBsrhoiQ/edit#gid=0";
-        final String range = "Sheet1!A1:E";
-        Sheets service =
-                new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                        .setApplicationName(APPLICATION_NAME)
-                        .build();
+        final String spreadsheetId = "15hDrYerqMb5g4dQbVrV8nFY11FOdBgr_BRjqBsrhoiQ";
+        final String range = "A4:H27";
+        Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
         ValueRange response = service.spreadsheets().values()
                 .get(spreadsheetId, range)
                 .execute();
@@ -83,10 +82,45 @@ public class SheetsQuickstart {
             System.out.println("No data found.");
         } else {
             System.out.println("Name, Major");
-            for (List row : values) {
-                // Print columns A and E, which correspond to indices 0 and 4.
-                System.out.printf("%s, %s\n", row.get(0), row.get(4));
+            for (List<Object> row : values) {
+
+                // Calculation of grade average
+                double p1 = Double.parseDouble((String) row.get(3));
+                double p2 = Double.parseDouble((String) row.get(4));
+                double p3 = Double.parseDouble((String) row.get(5));
+                double average = (p1 + p2 + p3) / 3;
+
+                // Calc of the percentage of absences
+                int absences = Integer.parseInt((String) row.get(2));
+                int classesPerSemester = 60;
+                double absencesPercentage = (double) absences / classesPerSemester * 100;
+
+                // Situation based on average and absences
+                String situation;
+                if (absencesPercentage > 25) {
+                    situation = "Failed due to absence";
+                } else if (average < 5) {
+                    situation = "Failed by grade";
+                } else if (average >= 5 && average < 7) {
+                    situation = "Final exam";
+                } else {
+                    situation = "Approved";
+                }
+
+                // Calc of the "Grade for Final Approval" for students in the "Final Exam
+                double naf = 0;
+                if (situation.equals("Final exam")) {
+                    naf = (10 - average) * 2;
+                }
+
+                // Rounding of naf if necessary
+                naf = Math.ceil(naf);
+
+                // Printing the results
+                System.out.printf("Name: %s, Average: %.2f, Situation: %s, NAF: %.0f\n", row.get(1), average, situation, naf);
+
             }
+
         }
     }
 }
